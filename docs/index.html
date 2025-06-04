@@ -26,7 +26,7 @@
   <footer>
       <p>使用Leaflet和Leaflet Omnivore实现 | 展示KML骑行路线数据 | made by qiuqiu</p>
 	  <a href="https://github.com/qiuqiu-22/KMLRouteMap" style="color: #7f8c8d;">https://github.com/qiuqiu-22/KMLRouteMap</a>
-    </footer>
+  </footer>
   <script>
     // 初始化地图
     var map = L.map('map').setView([31.6, 119.5], 11);
@@ -35,6 +35,8 @@
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
+	
+	let selectedRoute = null;
     
     // 存储点坐标和折线
     var route1Points = [];
@@ -91,21 +93,24 @@
           route1Polyline = L.polyline(route1Points, {
             color: '#FFB6C1',
             weight: 5,
-            opacity: 0.9,
+            opacity: 0.6,
             smoothFactor: 1
-          }).addTo(map);
+          }).addTo(map)
+			.on('click', function(e) {
+		      selectRoute('1');
+			});
           
           // 添加起点和终点标记
           if (route1Points.length > 1) {
             startMarker1 = L.marker(route1Points[0], {
               title: '路线1起点',
-              opacity: 0.9
-            }).bindPopup('2024年9月21日骑行起点').addTo(map);
+              opacity: 0
+            }).bindPopup('2024年09月10日骑行起点').addTo(map);
             
             endMarker1 = L.marker(route1Points[route1Points.length-1], {
               title: '路线1终点',
-              opacity: 0.9
-            }).bindPopup('2024年9月21日骑行终点').addTo(map);
+              opacity: 0
+            }).bindPopup('2024年09月10日骑行终点').addTo(map);
           }
         }
       })
@@ -130,9 +135,25 @@
           route2Polyline = L.polyline(route2Points, {
             color: '#8B008B',
             weight: 5,
-            opacity: 0.9,
+            opacity: 0.6,
             smoothFactor: 1
-          }).addTo(map);
+          }).addTo(map)
+			.on('click', function(e) {
+		      selectRoute('2');
+			});
+			
+		  // 添加起点和终点标记
+          if (route2Points.length > 1) {
+            startMarker2 = L.marker(route2Points[0], {
+              title: '路线1起点',
+              opacity: 0
+            }).bindPopup('2024年09月21日骑行起点').addTo(map);
+            
+            endMarker2 = L.marker(route2Points[route2Points.length-1], {
+              title: '路线1终点',
+              opacity: 0
+            }).bindPopup('2024年09月21日骑行终点').addTo(map);
+          }
         }
       })
       .on('error', function(e) {
@@ -156,9 +177,25 @@
           route3Polyline = L.polyline(route3Points, {
             color: '#483D8B',
             weight: 5,
-            opacity: 0.9,
+            opacity: 0.6,
             smoothFactor: 1
-          }).addTo(map);
+          }).addTo(map)
+			.on('click', function(e) {
+		      selectRoute('3');
+			});
+			
+		  // 添加起点和终点标记
+          if (route3Points.length > 1) {
+            startMarker3 = L.marker(route3Points[0], {
+              title: '路线3起点',
+              opacity: 0
+            }).bindPopup('2024年10月20日骑行起点').addTo(map);
+            
+            endMarker3 = L.marker(route3Points[route3Points.length-1], {
+              title: '路线3终点',
+              opacity: 0
+            }).bindPopup('2024年10月20日骑行终点').addTo(map);
+          }
         }
       })
       .on('error', function(e) {
@@ -182,9 +219,25 @@
           route4Polyline = L.polyline(route4Points, {
             color: '#000080',
             weight: 5,
-            opacity: 0.9,
+            opacity: 0.6,
             smoothFactor: 1
-          }).addTo(map);
+          }).addTo(map)
+			.on('click', function(e) {
+		      selectRoute('4');
+			});
+		  
+		  // 添加起点和终点标记
+          if (route4Points.length > 1) {
+            startMarker4 = L.marker(route4Points[0], {
+              title: '路线4起点',
+              opacity: 0
+            }).bindPopup('2024年10月27日骑行起点').addTo(map);
+            
+            endMarker4 = L.marker(route4Points[route4Points.length-1], {
+              title: '路线4终点',
+              opacity: 0
+            }).bindPopup('2024年10月27日骑行终点').addTo(map);
+          }
         }
       })
       .on('error', function(e) {
@@ -208,9 +261,25 @@
           route5Polyline = L.polyline(route5Points, {
             color: '#00FFFF',
             weight: 5,
-            opacity: 0.9,
+            opacity: 0.6,
             smoothFactor: 1
-          }).addTo(map);
+          }).addTo(map)
+			.on('click', function(e) {
+		      selectRoute('5');
+			});
+			
+		  // 添加起点和终点标记
+          if (route5Points.length > 1) {
+            startMarker5 = L.marker(route5Points[0], {
+              title: '路线5起点',
+              opacity: 0
+            }).bindPopup('2024年11月02日骑行起点').addTo(map);
+            
+            endMarker5 = L.marker(route5Points[route5Points.length-1], {
+              title: '路线5终点',
+              opacity: 0
+            }).bindPopup('2024年11月02日骑行终点').addTo(map);
+          }
         }
       })
       .on('error', function(e) {
@@ -234,9 +303,25 @@
           route6Polyline = L.polyline(route6Points, {
             color: '#3CB371',
             weight: 5,
-            opacity: 0.9,
+            opacity: 0.6,
             smoothFactor: 1
-          }).addTo(map);
+          }).addTo(map)
+			.on('click', function(e) {
+		      selectRoute('6');
+			});
+			
+		  // 添加起点和终点标记
+          if (route6Points.length > 1) {
+            startMarker6 = L.marker(route6Points[0], {
+              title: '路线6起点',
+              opacity: 0
+            }).bindPopup('2025年03月01日骑行起点').addTo(map);
+            
+            endMarker6 = L.marker(route6Points[route6Points.length-1], {
+              title: '路线6终点',
+              opacity: 0
+            }).bindPopup('2025年03月01日骑行终点').addTo(map);
+          }
         }
       })
       .on('error', function(e) {
@@ -260,9 +345,25 @@
           route7Polyline = L.polyline(route7Points, {
             color: '#DAA520',
             weight: 5,
-            opacity: 0.9,
+            opacity: 0.6,
             smoothFactor: 1
-          }).addTo(map);
+          }).addTo(map)
+			.on('click', function(e) {
+		      selectRoute('7');
+			});
+			
+		  // 添加起点和终点标记
+          if (route7Points.length > 1) {
+            startMarker7 = L.marker(route7Points[0], {
+              title: '路线7起点',
+              opacity: 0
+            }).bindPopup('2025年03月22日骑行起点').addTo(map);
+            
+            endMarker7 = L.marker(route7Points[route7Points.length-1], {
+              title: '路线7终点',
+              opacity: 0
+            }).bindPopup('2025年03月22日骑行终点').addTo(map);
+          }
         }
       })
       .on('error', function(e) {
@@ -286,9 +387,25 @@
           route8Polyline = L.polyline(route8Points, {
             color: '#FF4500',
             weight: 5,
-            opacity: 0.9,
+            opacity: 0.6,
             smoothFactor: 1
-          }).addTo(map);
+          }).addTo(map)
+			.on('click', function(e) {
+		      selectRoute('8');
+			});
+			
+		  // 添加起点和终点标记
+          if (route8Points.length > 1) {
+            startMarker8 = L.marker(route8Points[0], {
+              title: '路线8起点',
+              opacity: 0
+            }).bindPopup('2025年03月25日骑行起点').addTo(map);
+            
+            endMarker8 = L.marker(route8Points[route8Points.length-1], {
+              title: '路线8终点',
+              opacity: 0
+            }).bindPopup('2025年03月25日骑行终点').addTo(map);
+          }
         }
       })
       .on('error', function(e) {
@@ -312,14 +429,161 @@
           route9Polyline = L.polyline(route9Points, {
             color: '#8B0000',
             weight: 5,
-            opacity: 0.9,
+            opacity: 0.6,
             smoothFactor: 1
-          }).addTo(map);
+          }).addTo(map)
+			.on('click', function(e) {
+		      selectRoute('9');
+			});
+			
+		  // 添加起点和终点标记
+          if (route9Points.length > 1) {
+            startMarker9 = L.marker(route9Points[0], {
+              title: '路线9起点',
+              opacity: 0
+            }).bindPopup('2025年06月03日骑行起点').addTo(map);
+            
+            endMarker9 = L.marker(route9Points[route9Points.length-1], {
+              title: '路线9终点',
+              opacity: 0
+            }).bindPopup('2025年06月03日骑行终点').addTo(map);
+          }
         }
       })
       .on('error', function(e) {
         console.error('KML 9 error:', e);
       });
+	  
+	function selectRoute(routeId) {
+      // 重置所有路线样式
+      resetAllRoutes();
+      // 更新选中路线
+      selectedRoute = routeId;
+      // 高亮显示
+	  highlightRoute(routeId);      
+      }
+	
+	// 重置所有路线到默认状态
+    function resetAllRoutes() {
+      if (route1Polyline) {
+		route1Polyline.setStyle({ weight: 5, opacity: 0.6 });
+		startMarker1.setOpacity(0);
+		endMarker1.setOpacity(0);
+	  }
+      if (route2Polyline) {
+		route2Polyline.setStyle({ weight: 5, opacity: 0.6 });
+		startMarker2.setOpacity(0);
+		endMarker2.setOpacity(0);
+	  }
+      if (route3Polyline) {
+		route3Polyline.setStyle({ weight: 5, opacity: 0.6 });
+		startMarker3.setOpacity(0);
+		endMarker3.setOpacity(0);
+	  }
+      if (route4Polyline) {
+		route4Polyline.setStyle({ weight: 5, opacity: 0.6 });
+		startMarker4.setOpacity(0);
+		endMarker4.setOpacity(0);
+	  }
+      if (route5Polyline) {
+		route5Polyline.setStyle({ weight: 5, opacity: 0.6 });
+		startMarker5.setOpacity(0);
+		endMarker5.setOpacity(0);
+	  }
+      if (route6Polyline) {
+		route6Polyline.setStyle({ weight: 5, opacity: 0.6 });
+		startMarker6.setOpacity(0);
+		endMarker6.setOpacity(0);
+	  }
+      if (route7Polyline) {
+		route7Polyline.setStyle({ weight: 5, opacity: 0.6 });
+		startMarker7.setOpacity(0);
+		endMarker7.setOpacity(0);
+	  }
+      if (route8Polyline) {
+		route8Polyline.setStyle({ weight: 5, opacity: 0.6 });
+		startMarker8.setOpacity(0);
+		endMarker8.setOpacity(0);
+	  }
+      if (route9Polyline) {
+		route9Polyline.setStyle({ weight: 5, opacity: 0.6 });
+		startMarker9.setOpacity(0);
+		endMarker9.setOpacity(0);
+	  }
+    }
+    
+    // 加粗显示选中的路线
+    function highlightRoute(routeId) {
+	  
+      selectedRoute = routeId;
+      
+      switch(routeId) {
+        case '1':
+          if (route1Polyline) {
+			route1Polyline.setStyle({ weight: 8, opacity: 1 });
+			startMarker1.setOpacity(1);
+			endMarker1.setOpacity(1);
+		  }
+          break;
+        case '2':
+          if (route2Polyline) {
+			route2Polyline.setStyle({ weight: 8, opacity: 1 });
+			startMarker2.setOpacity(1);
+			endMarker2.setOpacity(1);
+		  }
+          break;
+        case '3':
+          if (route3Polyline) {
+			route3Polyline.setStyle({ weight: 8, opacity: 1 });
+			startMarker3.setOpacity(1);
+			endMarker3.setOpacity(1);
+		  }
+          break;
+        case '4':
+          if (route4Polyline) {
+			route4Polyline.setStyle({ weight: 8, opacity: 1 });
+			startMarker4.setOpacity(1);
+			endMarker4.setOpacity(1);
+		  }
+          break;
+        case '5':
+          if (route5Polyline) {
+			route5Polyline.setStyle({ weight: 8, opacity: 1 });
+			startMarker5.setOpacity(1);
+			endMarker5.setOpacity(1);
+		  }
+          break;
+        case '6':
+          if (route6Polyline) {
+			route6Polyline.setStyle({ weight: 8, opacity: 1 });
+			startMarker6.setOpacity(1);
+			endMarker6.setOpacity(1);
+		  }
+          break;
+        case '7':
+          if (route7Polyline) {
+			route7Polyline.setStyle({ weight: 8, opacity: 1 });
+			startMarker7.setOpacity(1);
+			endMarker7.setOpacity(1);
+		  }
+          break;
+        case '8':
+          if (route8Polyline) {
+			route8Polyline.setStyle({ weight: 8, opacity: 1 });
+			startMarker8.setOpacity(1);
+			endMarker8.setOpacity(1);
+		  }
+          break;
+        case '9':
+          if (route9Polyline) {
+			route9Polyline.setStyle({ weight: 8, opacity: 1 });
+			startMarker9.setOpacity(1);
+			endMarker9.setOpacity(1);
+		  }
+          break;
+      }
+    }
+	
   </script>
 </body>
 </html>
