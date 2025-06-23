@@ -17,3 +17,5 @@ https://raw.githubusercontent.com/qiuqiu-22/KMLRouteMap/refs/heads/main/KMLFile/
 https://raw.githubusercontent.com/qiuqiu-22/KMLRouteMap/refs/heads/main/KMLFile/20250603%E6%88%B7%E5%A4%96%E9%AA%91%E8%A1%8C.kml
 
 https://raw.githubusercontent.com/qiuqiu-22/KMLRouteMap/refs/heads/main/KMLFile/20250605%E6%88%B7%E5%A4%96%E9%AA%91%E8%A1%8C.kml
+
+https://raw.githubusercontent.com/qiuqiu-22/KMLRouteMap/refs/heads/main/KMLFile/20250617%E6%88%B7%E5%A4%96%E9%AA%91%E8%A1%8C.kml
