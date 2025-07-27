@@ -29,3 +29,9 @@ Commit Time: UTC+8 2025-06-23 23:00<br>
 Description: Added another route. This route is done on today and its further version is attached to Mount Mao.<br>
 Subsequent: <br>
 Problems: <br>
+<br>
+3nd Version: V0.2.0 - 1st submission<br>
+Commit Time: UTC+8 2025-07-27 15:00<br>
+Description: Added sidebar function, allowing to select the center of the map.<br>
+Subsequent: Improve the functionality of the sidebar, add options for the map center, and enhance the UI interface of the sidebar.<br>
+Problems: <br>
