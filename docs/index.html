@@ -113,6 +113,7 @@
 	var route10Points = [];
 	var route11Points = [];
 	var route12Points = [];
+	var route13Points = [];
 	
     var route1Polyline = null;
     var route2Polyline = null;
@@ -126,6 +127,7 @@
 	var route10Polyline = null;
 	var route11Polyline = null;
 	var route12Polyline = null;
+	var route13Polyline = null;
 	
     var startMarker1 = null;
     var endMarker1 = null;
@@ -151,6 +153,8 @@
     var endMarker11 = null;
 	var startMarker12 = null;
     var endMarker12 = null;
+	var startMarker13 = null;
+    var endMarker13 = null;
 	 
     // 加载第一个KML文件
     var kmlLayer1 = omnivore.kml('https://raw.githubusercontent.com/qiuqiu-22/KMLRouteMap/refs/heads/main/KMLFile/20240910%E6%88%B7%E5%A4%96%E9%AA%91%E8%A1%8C.kml')
@@ -604,7 +608,7 @@
             }).bindPopup('2025年06月17日骑行起点').addTo(map);
             
             endMarker11 = L.marker(route11Points[route11Points.length-1], {
-              title: '路线10终点',
+              title: '路线11终点',
               opacity: 0
             }).bindPopup('2025年06月17日骑行终点').addTo(map);
           }
@@ -646,7 +650,7 @@
             }).bindPopup('2025年06月23日骑行起点').addTo(map);
             
             endMarker12 = L.marker(route12Points[route12Points.length-1], {
-              title: '路线10终点',
+              title: '路线12终点',
               opacity: 0
             }).bindPopup('2025年06月23日骑行终点').addTo(map);
           }
@@ -654,6 +658,48 @@
       })
       .on('error', function(e) {
         console.error('KML 12 error:', e);
+      });
+	
+	// 加载第十三个KML文件
+    var kmlLayer13 = omnivore.kml('https://raw.githubusercontent.com/qiuqiu-22/KMLRouteMap/refs/heads/main/KMLFile/20250727%E6%88%B7%E5%A4%96%E9%AA%91%E8%A1%8C.kml')
+      .on('ready', function() {
+        console.log('KML 13 loaded!');
+        
+        // 收集所有点坐标
+        this.eachLayer(function(layer) {
+          if (layer instanceof L.Marker) {
+            route13Points.push(layer.getLatLng());
+          }
+        });
+        
+        // 创建折线
+        if (route13Points.length > 0) {
+          route13Polyline = L.polyline(route13Points, {
+            color: '#8A261A',
+            weight: 5,
+            opacity: 0.6,
+            smoothFactor: 1
+          }).addTo(map)
+			.on('click', function(e) {
+		      selectRoute('13');
+			});
+			
+		  // 添加起点和终点标记
+          if (route13Points.length > 1) {
+            startMarker13 = L.marker(route13Points[0], {
+              title: '路线13起点',
+              opacity: 0
+            }).bindPopup('2025年07月27日骑行起点').addTo(map);
+            
+            endMarker13 = L.marker(route13Points[route13Points.length-1], {
+              title: '路线13终点',
+              opacity: 0
+            }).bindPopup('2025年07月27日骑行终点').addTo(map);
+          }
+        }
+      })
+      .on('error', function(e) {
+        console.error('KML 13 error:', e);
       });
 	  
 	// 侧边栏控制函数
@@ -756,6 +802,11 @@
 		startMarker12.setOpacity(0);
 		endMarker12.setOpacity(0);
 	  }
+	  if (route13Polyline) {
+		route13Polyline.setStyle({ weight: 5, opacity: 0.6 });
+		startMarker13.setOpacity(0);
+		endMarker13.setOpacity(0);
+	  }
     }
     
     // 加粗显示选中的路线
@@ -846,6 +897,13 @@
 			route12Polyline.setStyle({ weight: 8, opacity: 1 });
 			startMarker12.setOpacity(1);
 			endMarker12.setOpacity(1);
+		  }
+          break;
+		case '13':
+          if (route13Polyline) {
+			route13Polyline.setStyle({ weight: 8, opacity: 1 });
+			startMarker13.setOpacity(1);
+			endMarker13.setOpacity(1);
 		  }
           break;
       }
