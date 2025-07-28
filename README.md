@@ -35,3 +35,9 @@ Commit Time: UTC+8 2025-07-27 15:00<br>
 Description: Added sidebar function, allowing to select the center of the map.<br>
 Subsequent: Improve the functionality of the sidebar, add options for the map center, and enhance the UI interface of the sidebar.<br>
 Problems: <br>
+<br>
+3rd Version: V0.2.0 - 2nd submission<br>
+Commit Time: UTC+8 2025-07-28 13:00<br>
+Description: Added another route - route13.<br>
+Subsequent: <br>
+Problems: <br>
