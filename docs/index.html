@@ -114,6 +114,7 @@
 	var route11Points = [];
 	var route12Points = [];
 	var route13Points = [];
+	var route14Points = [];
 	
     var route1Polyline = null;
     var route2Polyline = null;
@@ -128,6 +129,7 @@
 	var route11Polyline = null;
 	var route12Polyline = null;
 	var route13Polyline = null;
+	var route14Polyline = null;
 	
     var startMarker1 = null;
     var endMarker1 = null;
@@ -155,7 +157,9 @@
     var endMarker12 = null;
 	var startMarker13 = null;
     var endMarker13 = null;
-	 
+	var startMarker14 = null;
+    var endMarker14 = null;
+	
     // 加载第一个KML文件
     var kmlLayer1 = omnivore.kml('https://raw.githubusercontent.com/qiuqiu-22/KMLRouteMap/refs/heads/main/KMLFile/20240910%E6%88%B7%E5%A4%96%E9%AA%91%E8%A1%8C.kml')
       .on('ready', function() {
@@ -701,7 +705,51 @@
       .on('error', function(e) {
         console.error('KML 13 error:', e);
       });
-	  
+	
+	// 加载第十四个KML文件
+    var kmlLayer14 = omnivore.kml('https://raw.githubusercontent.com/qiuqiu-22/KMLRouteMap/refs/heads/main/KMLFile/20250728%E6%88%B7%E5%A4%96%E9%AA%91%E8%A1%8C.kml')
+      .on('ready', function() {
+        console.log('KML 14 loaded!');
+        
+        // 收集所有点坐标
+        this.eachLayer(function(layer) {
+          if (layer instanceof L.Marker) {
+            route14Points.push(layer.getLatLng());
+          }
+        });
+        
+        // 创建折线
+        if (route14Points.length > 0) {
+          route14Polyline = L.polyline(route14Points, {
+            color: '#8A2771',
+            weight: 5,
+            opacity: 0.6,
+            smoothFactor: 1
+          }).addTo(map)
+			.on('click', function(e) {
+		      selectRoute('14');
+			});
+			
+		  // 添加起点和终点标记
+          if (route14Points.length > 1) {
+            startMarker14 = L.marker(route14Points[0], {
+              title: '路线14起点',
+              opacity: 0
+            }).bindPopup('2025年07月28日骑行起点').addTo(map);
+            
+            endMarker14 = L.marker(route14Points[route14Points.length-1], {
+              title: '路线14终点',
+              opacity: 0
+            }).bindPopup('2025年07月28日骑行终点').addTo(map);
+          }
+        }
+      })
+      .on('error', function(e) {
+        console.error('KML 14 error:', e);
+      });
+	
+	
+	
 	// 侧边栏控制函数
 	function toggleSidebar() {
 	  const sidebar = document.getElementById('sidebar');
@@ -807,6 +855,11 @@
 		startMarker13.setOpacity(0);
 		endMarker13.setOpacity(0);
 	  }
+	  if (route14Polyline) {
+		route14Polyline.setStyle({ weight: 5, opacity: 0.6 });
+		startMarker14.setOpacity(0);
+		endMarker14.setOpacity(0);
+	  }
     }
     
     // 加粗显示选中的路线
@@ -906,6 +959,13 @@
 			endMarker13.setOpacity(1);
 		  }
           break;
+		case '14':
+          if (route14Polyline) {
+			route14Polyline.setStyle({ weight: 8, opacity: 1 });
+			startMarker14.setOpacity(1);
+			endMarker14.setOpacity(1);
+		  }
+          break;  
       }
     }
 	
