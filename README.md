@@ -41,3 +41,9 @@ Commit Time: UTC+8 2025-07-28 13:00<br>
 Description: Added another route - route13.<br>
 Subsequent: <br>
 Problems: <br>
+<br>
+4th Version: V0.2.1 - 1st submission<br>
+Commit Time: UTC+8 2025-08-26 23:40<br>
+Description: Added another three routes - route14, 15 and 16. Added the function of weather display in the center of the map, weather map display and distance measurement.<br>
+Subsequent: Continue to refine the UI interface of the sidebar.<br>
+Problems: The distance measurement function is not so good.<br>
