@@ -6,36 +6,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KMLRouteMap</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
   <script src="https://unpkg.com/leaflet-omnivore@0.3.4/leaflet-omnivore.min.js"></script>
+  
   <style>
-    #map {
+    /* 地图容器 */
+	#map {
       width: 100%;
-      height: 1220px;
+      height: calc(100vh - 100px);
     }
+	
+	/* 页脚样式 */
 	footer {
       text-align: center;
       padding: 4px;
       color: #7f8c8d;
       font-size: 1rem;
+	  height: 60px;
     }
 	
+	/* 侧边栏容器 */
 	.sidebar {
       position: fixed;
       top: 0;
       left: 0;
       width: 250px;
       height: 100%;
-      background-color: rgba(255, 255, 255, 0.9);
+      background-color: rgba(255, 255, 255, 0.75);
       z-index: 1000;
       padding: 40px;
       box-shadow: 2px 0 5px rgba(0,0,0,0.1);
       transform: translateX(-100%);
       transition: transform 0.3s ease;
     }
+	/* 侧边栏展开 */
     .sidebar.open {
       transform: translateX(0);
     }
+	/* “菜单”按钮 */
     .sidebar-toggle {
       position: fixed;
       left: 10px;
@@ -47,38 +57,276 @@
       padding: 10px;
       cursor: pointer;
       box-shadow: 0 0 5px rgba(0,0,0,0.2);
+	  transition: background-color 0.3s ease;
     }
-    .sidebar h2 {
-      margin-top: 0;
-      color: #333;
-    }
+	/* “菜单”按钮悬停状态 */
+	.sidebar-toggle:hover {
+	  background-color: #e0e0e0;
+	}
+	/* 侧边栏表单元素 */
     .sidebar label {
       display: block;
       margin: 15px 0 5px;
       font-weight: bold;
     }
+	/* 侧边栏下拉框元素 */
     .sidebar select {
       width: 100%;
       padding: 8px;
       border-radius: 4px;
       border: 1px solid #ddd;
+	  margin-bottom: 10px;
     }
+	/* “显示天气”按钮 */
+	.sidebar button {
+	  width: 100%;
+	  padding: 8px;
+	  background-color: #4CAF50;
+      color: white;
+	  border-radius: 8px;
+      border: none;
+      cursor: pointer;
+	  margin-bottom: 10px;
+	}
+	/* “显示天气”按钮悬停状态 */
+	.sidebar button:hover {
+      background-color: #45a049;
+	}
+	/* 天气面板 */
+	#weather-panel {
+	  padding: 15px;
+	  background-color: white;
+	  border-radius: 8px;
+	  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+	  border: 1px solid #eee;
+	}
+	/* 天气详情 */
+	#weather-details {
+	  margin-top: 10px;
+	}
+	
+	
+	/* 天气地图控制面板样式 */
+	.weather-control {
+	  background: rgba(255, 255, 255, 0.9);
+	  border-radius: 12px;
+	  padding: 15px;
+	  margin: 15px 0;
+	  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+	  backdrop-filter: blur(10px);
+	}
+	.weather-control h3 {
+	  margin: 0 0 15px 0;
+	  color: #2c3e50;
+	  font-size: 18px;
+	  text-align: center;
+	  border-bottom: 1px solid #eee;
+	  padding-bottom: 10px;
+	}
+	.weather-map-btn {
+	  width: 100%;
+	  padding: 12px;
+	  background: linear-gradient(135deg, #3498db, #2980b9);
+	  color: white;
+	  border: none;
+	  border-radius: 6px;
+	  cursor: pointer;
+	  font-size: 16px;
+	  margin-bottom: 15px;
+	  transition: all 0.3s ease;
+	}
+	.weather-map-btn:hover {
+	  background: linear-gradient(135deg, #2980b9, #3498db);
+	  transform: translateY(-2px);
+	  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	}
+	.weather-options {
+	  display: flex;
+	  flex-direction: column;
+	  gap: 12px;
+	}
+	.weather-options label {
+	  display: flex;
+	  align-items: center;
+	  padding: 12px;
+	  border-radius: 8px;
+	  background: rgba(236, 240, 241, 0.5);
+	  cursor: pointer;
+	  transition: all 0.3s ease;
+	  border: 2px solid transparent;
+	}
+	.weather-options label:hover {
+	  background: rgba(189, 195, 199, 0.5);
+	  transform: translateY(-2px);
+	  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	}
+	.weather-options label.selected {
+	  background: rgba(52, 152, 219, 0.2);
+	  border-color: #3498db;
+	}
+	.weather-options input[type="radio"] {
+	  margin-right: 12px;
+	  transform: scale(1.2);
+	}
+	.weather-icon {
+	  margin-right: 10px;
+	  font-size: 20px;
+	  width: 24px;
+	  text-align: center;
+	}
+	.temp-icon { color: #e74c3c; }
+	.precip-icon { color: #3498db; }
+	.wind-icon { color: #27ae60; }
+	
+	/* 天气图例样式 */
+	.weather-legend {
+	  position: absolute;
+	  bottom: 20px;
+	  right: 20px;
+	  background: rgba(255, 255, 255, 0.9);
+	  padding: 10px;
+	  border-radius: 8px;
+	  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+	  z-index: 1000;
+	  max-width: 200px;
+	}
+	.weather-legend h4 {
+	  margin: 0 0 8px 0;
+	  font-size: 14px;
+	  color: #2c3e50;
+	}
+	.legend-gradient {
+	  height: 20px;
+	  width: 100%;
+	  border-radius: 4px;
+	  margin-bottom: 5px;
+	}
+	.legend-labels {
+	  display: flex;
+	  justify-content: space-between;
+	  font-size: 12px;
+	  color: #7f8c8d;
+	}
+	/* 温度渐变 */
+	.temp-gradient {
+	  background: linear-gradient(to right, #313695, #4575b4, #74add1, #abd9e9, #e0f3f8, #ffffcc, #fee090, #fdae61, #f46d43, #d73027, #a50026);
+	}
+	/* 降水渐变 */
+	.precip-gradient {
+	  background: linear-gradient(to right, #ffffff, #c6dbef, #9ecae1, #6baed6, #4292c6, #2171b5, #08519c, #08306b);
+	}
+	/* 风速渐变 */
+	.wind-gradient {
+	  background: linear-gradient(to right, #ffffcc, #ffeda0, #fed976, #feb24c, #fd8d3c, #fc4e2a, #e31a1c, #bd0026, #800026);
+	}
+	
+	/* 测距控制面板样式 */
+	distance-control {
+	  background: rgba(255, 255, 255, 0.9);
+	  border-radius: 12px;
+	  padding: 15px;
+	  margin: 15px 0;
+	  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+	  backdrop-filter: blur(10px);
+	}
+	.distance-control h3 {
+	  margin: 0 0 15px 0;
+	  color: #2c3e50;
+	  font-size: 18px;
+	  text-align: center;
+	  border-bottom: 1px solid #eee;
+	  padding-bottom: 10px;
+	}
+	.distance-btn {
+	  width: 100%;
+	  padding: 12px;
+	  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+	  color: white;
+	  border: none;
+	  border-radius: 6px;
+	  cursor: pointer;
+	  font-size: 16px;
+	  margin-bottom: 15px;
+	  transition: all 0.3s ease;
+	}
+	.distance-btn:hover {
+	  background: linear-gradient(135deg, #8e44ad, #9b59b6);
+	  transform: translateY(-2px);
+	  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	}
+	#distance-result {
+	  background: #f8f9fa;
+	  padding: 10px;
+	  border-radius: 6px;
+	  border-left: 4px solid #9b59b6;
+	}
   </style>
 </head>
 
 <body>
-  <!-- 侧边栏内容 -->
   <!-- 侧边栏开关按钮 -->
   <button class="sidebar-toggle" onclick="toggleSidebar()">☰ 菜单</button>
   
   <!-- 侧边栏内容 -->
   <div class="sidebar" id="sidebar">
-    <h2></h2>
+	<!-- 地图中心位置选择面板 -->
     <label for="center-select">地图中心位置:</label>
     <select id="center-select" onchange="changeMapCenter()">
       <option value="31.67,119.57,13">河海大学金坛校区（默认中心）</option>
       <option value="31.91,118.78,13">河海大学江宁校区</option>
     </select>
+	
+	<!-- 天气按钮和天气面板 -->
+	<label for="center-select">地图中心天气:</label>
+    <button id="weather-btn" onclick="showWeather()">更新天气</button>
+    <div id="weather-panel" style="display: none;">
+      <h3>当前天气</h3>
+      <div id="weather-details">点击"显示天气"按钮获取数据</div>
+    </div>
+	
+	<!-- 天气地图控制按钮 -->
+	<div class="weather-control">
+	  <h3>天气地图显示</h3>
+	  <button id="show-weather-map" class="weather-map-btn">显示天气地图</button>
+	  <button id="hide-weather-map" class="weather-map-btn" style="display:none;">隐藏天气地图</button>
+	  <div class="weather-options">
+		<label class="weather-option">
+		  <input type="radio" name="weather-type" value="temperature" checked>
+		  <span class="weather-icon temp-icon">🌡️</span>
+		  <span>温度</span>
+		</label>
+		<label class="weather-option">
+		  <input type="radio" name="weather-type" value="precipitation">
+		  <span class="weather-icon precip-icon">💧</span>
+		  <span>降水</span>
+		</label>
+		<label class="weather-option">
+		  <input type="radio" name="weather-type" value="wind">
+		  <span class="weather-icon wind-icon">💨</span>
+		  <span>风速</span>
+		</label>
+	  </div>
+	  
+	  <!-- 透明度控制 -->
+	  <div class="weather-opacity-control">
+		<label for="opacity-slider">
+		  <span class="weather-icon">👁️</span>
+		  图层透明度: <span id="opacity-value">70%</span>
+		</label>
+		<input type="range" id="opacity-slider" min="10" max="100" value="70">
+	  </div>
+	  
+	  <!-- 距离测量 -->
+	  <div class="distance-control">
+	    <h3>距离测量</h3>
+	    <button id="start-measuring" class="distance-btn">开始测距</button>
+	    <button id="stop-measuring" class="distance-btn" style="display:none;">停止测距</button>
+	    <div id="distance-result" style="display:none; margin-top:10px;">
+		  <p><strong>测量距离:</strong> <span id="measured-distance">0</span> 公里</p>
+	    </div>
+	  </div>
+	  
+	</div>
   </div>
 
   <div id="map"></div>
@@ -98,7 +346,14 @@
 	  opacity: 0.6
     }).addTo(map);
 	
+	// 天气地图功能
+	let weatherLayer = null;
+	let weatherLegend = null
+	
 	let selectedRoute = null;
+	
+	var measureControl = null;
+	var measuredDistance = 0;
     
     // 存储点坐标和折线
     var route1Points = [];
@@ -115,6 +370,8 @@
 	var route12Points = [];
 	var route13Points = [];
 	var route14Points = [];
+	var route15Points = [];
+	var route16Points = [];
 	
     var route1Polyline = null;
     var route2Polyline = null;
@@ -130,6 +387,8 @@
 	var route12Polyline = null;
 	var route13Polyline = null;
 	var route14Polyline = null;
+	var route15Polyline = null;
+	var route16Polyline = null;
 	
     var startMarker1 = null;
     var endMarker1 = null;
@@ -159,6 +418,10 @@
     var endMarker13 = null;
 	var startMarker14 = null;
     var endMarker14 = null;
+	var startMarker15 = null;
+    var endMarker15 = null;
+	var startMarker16 = null;
+    var endMarker16 = null;
 	
     // 加载第一个KML文件
     var kmlLayer1 = omnivore.kml('https://raw.githubusercontent.com/qiuqiu-22/KMLRouteMap/refs/heads/main/KMLFile/20240910%E6%88%B7%E5%A4%96%E9%AA%91%E8%A1%8C.kml')
@@ -748,35 +1011,89 @@
         console.error('KML 14 error:', e);
       });
 	
+	// 加载第十五个KML文件
+    var kmlLayer15 = omnivore.kml('https://raw.githubusercontent.com/qiuqiu-22/KMLRouteMap/refs/heads/main/KMLFile/20250824%E6%88%B7%E5%A4%96%E9%AA%91%E8%A1%8C.kml')
+      .on('ready', function() {
+        console.log('KML 15 loaded!');
+        
+        // 收集所有点坐标
+        this.eachLayer(function(layer) {
+          if (layer instanceof L.Marker) {
+            route15Points.push(layer.getLatLng());
+          }
+        });
+        
+        // 创建折线
+        if (route15Points.length > 0) {
+          route15Polyline = L.polyline(route15Points, {
+            color: '#2F56CA',
+            weight: 5,
+            opacity: 0.6,
+            smoothFactor: 1
+          }).addTo(map)
+			.on('click', function(e) {
+		      selectRoute('15');
+			});
+          
+          // 添加起点和终点标记
+          if (route15Points.length > 1) {
+            startMarker15 = L.marker(route15Points[0], {
+              title: '路线15起点',
+              opacity: 0
+            }).bindPopup('2025年08月24日骑行起点').addTo(map);
+            
+            endMarker15 = L.marker(route15Points[route15Points.length-1], {
+              title: '路线15终点',
+              opacity: 0
+            }).bindPopup('2025年08月24日骑行终点').addTo(map);
+          }
+        }
+      })
+      .on('error', function(e) {
+        console.error('KML 15 error:', e);
+      });
 	
-	
-	// 侧边栏控制函数
-	function toggleSidebar() {
-	  const sidebar = document.getElementById('sidebar');
-	  
-	  sidebar.classList.toggle('open');
-	}
-	
-	// 改变地图中心函数
-	function changeMapCenter() {
-	  const select = document.getElementById('center-select');
-	  const value = select.value;
-	  const [lat, lng, zoom] = value.split(',').map(Number);
-	  map.setView([lat, lng], zoom);
-	}
-	
-	// 点击地图其他地方关闭侧边栏
-	map.on('click', function() {
-      const sidebar = document.getElementById('sidebar');
-      if (sidebar.classList.contains('open')) {
-        sidebar.classList.remove('open');
-      }
-    });
-	
-	// 防止侧边栏点击事件冒泡到地图
-    document.getElementById('sidebar').addEventListener('click', function(e) {
-      e.stopPropagation();
-    });
+	// 加载第十六个KML文件
+    var kmlLayer16 = omnivore.kml('https://raw.githubusercontent.com/qiuqiu-22/KMLRouteMap/refs/heads/main/KMLFile/20250826%E6%88%B7%E5%A4%96%E9%AA%91%E8%A1%8C.kml')
+      .on('ready', function() {
+        console.log('KML 16 loaded!');
+        
+        // 收集所有点坐标
+        this.eachLayer(function(layer) {
+          if (layer instanceof L.Marker) {
+            route16Points.push(layer.getLatLng());
+          }
+        });
+        
+        // 创建折线
+        if (route16Points.length > 0) {
+          route16Polyline = L.polyline(route16Points, {
+            color: '#6F16C1',
+            weight: 5,
+            opacity: 0.6,
+            smoothFactor: 1
+          }).addTo(map)
+			.on('click', function(e) {
+		      selectRoute('16');
+			});
+          
+          // 添加起点和终点标记
+          if (route16Points.length > 1) {
+            startMarker16 = L.marker(route16Points[0], {
+              title: '路线16起点',
+              opacity: 0
+            }).bindPopup('2025年08月26日骑行起点').addTo(map);
+            
+            endMarker16 = L.marker(route16Points[route16Points.length-1], {
+              title: '路线16终点',
+              opacity: 0
+            }).bindPopup('2025年08月26日骑行终点').addTo(map);
+          }
+        }
+      })
+      .on('error', function(e) {
+        console.error('KML 16 error:', e);
+      });
 	
 	// 选择某一条路线
 	function selectRoute(routeId) {
@@ -859,6 +1176,16 @@
 		route14Polyline.setStyle({ weight: 5, opacity: 0.6 });
 		startMarker14.setOpacity(0);
 		endMarker14.setOpacity(0);
+	  }
+	  if (route15Polyline) {
+		route15Polyline.setStyle({ weight: 5, opacity: 0.6 });
+		startMarker15.setOpacity(0);
+		endMarker15.setOpacity(0);
+	  }
+	  if (route16Polyline) {
+		route16Polyline.setStyle({ weight: 5, opacity: 0.6 });
+		startMarker16.setOpacity(0);
+		endMarker16.setOpacity(0);
 	  }
     }
     
@@ -965,10 +1292,459 @@
 			startMarker14.setOpacity(1);
 			endMarker14.setOpacity(1);
 		  }
-          break;  
+          break;
+		case '15':
+          if (route15Polyline) {
+			route15Polyline.setStyle({ weight: 8, opacity: 1 });
+			startMarker15.setOpacity(1);
+			endMarker15.setOpacity(1);
+		  }
+          break;
+		case '16':
+          if (route16Polyline) {
+			route16Polyline.setStyle({ weight: 8, opacity: 1 });
+			startMarker16.setOpacity(1);
+			endMarker16.setOpacity(1);
+		  }
+          break;
       }
     }
+		
+	// 侧边栏控制函数
+	function toggleSidebar() {
+	  const sidebar = document.getElementById('sidebar');	  
+	  sidebar.classList.toggle('open');
+	}
 	
+	// 改变地图中心函数
+	function changeMapCenter() {
+	  const select = document.getElementById('center-select');
+	  const value = select.value;
+	  const [lat, lng, zoom] = value.split(',').map(Number);
+	  map.setView([lat, lng], zoom);
+	}
+	
+	// 点击地图其他地方关闭侧边栏
+	map.on('click', function() {
+      const sidebar = document.getElementById('sidebar');
+      if (sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+      }
+    });
+	
+	// 防止侧边栏点击事件冒泡到地图
+    document.getElementById('sidebar').addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+	
+	// 天气功能
+	async function showWeather() {
+	  const weatherPanel = document.getElementById('weather-panel');
+	  const weatherDetails = document.getElementById('weather-details');
+	  
+	  // 显示天气面板
+	  weatherPanel.style.display = 'block';
+	  weatherDetails.innerHTML = '正在获取天气数据...';
+	  
+	  try {
+        // 获取当前地图中心点
+        const center = map.getCenter();
+        const lat = center.lat;
+        const lng = center.lng;
+		
+		// 调用Open-Meteo API
+        const response = await fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true`
+        );
+		const data = await response.json();
+		
+		// 处理天气数据
+        const weather = data.current_weather;
+        const weatherDescription = getWeatherDescription(weather.weathercode);
+		
+		// 显示天气信息
+		weatherDetails.innerHTML = 
+		  '<p><strong>当前位置：</strong> 纬度 ' + lat.toFixed(4) + '</p>' +
+		  '<p>经度 ' + lng.toFixed(4) + '</p>' +
+		  '<p><strong>温度:</strong> ' + weather.temperature + '°C</p>' +
+		  '<p><strong>风速:</strong> ' + weather.windspeed + ' km/h</p>' +
+		  '<p><strong>天气:</strong> ' + weatherDescription + '</p>' +
+		  '<p><strong>更新时间:</strong> ' + new Date(weather.time).toLocaleString() + '</p>';
+	  } catch (error) {
+        console.error('获取天气数据失败:', error);
+        weatherDetails.innerHTML = '获取天气数据失败，请重试';
+      }
+	}
+	
+	// 天气代码转文字描述
+    function getWeatherDescription(code) {
+      const weatherMap = {
+        0: "晴天 ☀️",
+        1: "大部分晴天 🌤",
+        2: "部分多云 ⛅",
+        3: "阴天 ☁️",
+        45: "雾 🌫",
+        48: "冻雾 ❄️",
+        51: "小雨 🌧",
+        53: "中雨 🌧",
+        55: "大雨 🌧",
+        56: "冻雨 ❄️",
+        57: "强冻雨 ❄️",
+        61: "小雨 🌧",
+        63: "中雨 🌧",
+        65: "大雨 🌧",
+        66: "冻雨 ❄️",
+        67: "强冻雨 ❄️",
+        71: "小雪 ❄️",
+        73: "中雪 ❄️",
+        75: "大雪 ❄️",
+        77: "冰雹 🌨",
+        80: "小阵雨 🌦",
+        81: "中阵雨 🌦",
+        82: "强阵雨 🌧",
+        85: "小阵雪 ❄️",
+        86: "大阵雪 ❄️",
+        95: "雷暴 ⚡",
+        96: "雷暴伴小冰雹 ⚡🌨",
+        99: "雷暴伴大冰雹 ⚡🌨"
+      };
+      return weatherMap[code] || `未知天气 (代码: ${code})`;
+    }
+	
+	// 初始化天气地图功能
+	function initWeatherMap() {
+	  // 添加天气地图按钮事件监听
+	  document.getElementById('show-weather-map').addEventListener('click', showWeatherMap);
+	  document.getElementById('hide-weather-map').addEventListener('click', hideWeatherMap);
+	  
+	  // 添加透明度滑块事件监听
+	  const opacitySlider = document.getElementById('opacity-slider');
+	  const opacityValue = document.getElementById('opacity-value');
+	  
+	  opacitySlider.addEventListener('input', function() {
+		const value = this.value;
+		opacityValue.textContent = value + '%';
+		currentOpacity = value / 100;
+		
+		// 如果天气图层已显示，实时更新透明度
+		if (weatherLayer && map.hasLayer(weatherLayer)) {
+		  weatherLayer.setOpacity(currentOpacity);
+		}
+	  });
+	  
+	  // 获取所有天气选项标签
+	  const weatherOptionLabels = document.querySelectorAll('.weather-option');
+	  
+	  // 初始选中第一个选项
+	  weatherOptionLabels[0].classList.add('selected');
+	  
+	  const weatherTypeRadios = document.querySelectorAll('input[name="weather-type"]');
+	  weatherTypeRadios.forEach((radio, index) => {
+		radio.addEventListener('change', function() {
+		  // 移除所有选中样式
+		  weatherOptionLabels.forEach(label => label.classList.remove('selected'));
+		  // 添加当前选中样式
+		  weatherOptionLabels[index].classList.add('selected');
+		  
+		  // 只有当天气地图已显示时才更新
+		  if (weatherLayer && map.hasLayer(weatherLayer)) {
+			showWeatherMap();
+		  }
+		});
+	  });
+	  
+	  // 创建天气图例容器
+	  weatherLegend = L.control({position: 'bottomright'});
+	  weatherLegend.onAdd = function(map) {
+		const div = L.DomUtil.create('div', 'weather-legend');
+		div.innerHTML = 
+		  '<h4>🌡️ 温度图例</h4>' +
+		  '<div class="legend-gradient temp-gradient"></div>' +
+		  '<div class="legend-labels">' +
+			'<span>-20°C</span>' +
+			'<span>0°C</span>' +
+			'<span>20°C</span>' +
+			'<span>40°C</span>' +
+		  '</div>' +
+		  '<div class="legend-scale">' +
+			'<span>低温</span>' +
+			'<span>高温</span>' +
+		  '</div>';
+		return div;
+	  };
+	}
+
+	// 显示天气地图
+	async function showWeatherMap() {
+	  try {
+		// 获取选中的天气类型
+		const selectedWeatherType = document.querySelector('input[name="weather-type"]:checked');
+		if (!selectedWeatherType) {
+		  throw new Error('未找到选中的天气类型');
+		}
+		const weatherType = selectedWeatherType.value;
+		
+		// 显示加载状态
+		const showBtn = document.getElementById('show-weather-map');
+		const hideBtn = document.getElementById('hide-weather-map');
+		showBtn.style.display = 'none';
+		hideBtn.style.display = 'block';
+		hideBtn.textContent = '加载中...';
+		hideBtn.disabled = true;
+		
+		// 移除现有的天气图层
+		if (weatherLayer) {
+		  map.removeLayer(weatherLayer);
+		}
+		
+		let tileUrl;
+		let legendHtml;
+		let attribution;
+		
+		switch(weatherType) {
+		  case 'temperature':
+			tileUrl = 'https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=c9e9009c27e558e0f8be0497d8e2d387';
+			legendHtml =
+			  '<h4>温度图例 (°C)</h4>' +
+			  '<div class="legend-gradient temp-gradient"></div>' +
+			  '<div class="legend-labels">' +
+				'<span>20°C</span>' +
+				'<span>40°C</span>' +
+			  '</div>';
+			attribution = 'Weather data © OpenWeatherMap';
+			break;
+			
+		  case 'precipitation':
+			tileUrl = 'https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=c9e9009c27e558e0f8be0497d8e2d387';
+			legendHtml =
+			  '<h4>降水图例 (mm)</h4>' +
+			  '<div class="legend-gradient precip-gradient"></div>' +
+			  '<div class="legend-labels">' +
+				'<span>0</span>' +
+				'<span>50</span>' +
+			  '</div>';
+			attribution = 'Weather data © OpenWeatherMap';
+			break;
+			
+		  case 'wind':
+			tileUrl = 'https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=c9e9009c27e558e0f8be0497d8e2d387';
+			legendHtml =
+			  '<h4>风速图例 (m/s)</h4>' +
+			  '<div class="legend-gradient wind-gradient"></div>' +
+			  '<div class="legend-labels">' +
+				'<span>0</span>' +
+				'<span>25</span>' +
+			  '</div>';
+			attribution = 'Weather data © OpenWeatherMap';
+			break;
+		}
+		
+		// 添加新的天气图层
+		weatherLayer = L.tileLayer(tileUrl, {
+		  attribution: attribution,
+		  opacity: 0.7,
+		  maxZoom: 19
+		}).addTo(map);
+		
+		// 更新图例
+		updateWeatherLegend(legendHtml);
+		
+		// 恢复按钮状态
+		hideBtn.textContent = '隐藏天气地图';
+		hideBtn.disabled = false;
+		
+	  } catch (error) {
+		console.error('加载天气地图失败:', error);
+		alert('加载天气地图失败，请重试');
+		hideWeatherMap();
+	  }
+	}
+
+	// 隐藏天气地图
+	function hideWeatherMap() {
+	  if (weatherLayer) {
+		map.removeLayer(weatherLayer);
+		weatherLayer = null;
+	  }
+	  
+	  // 移除图例
+	  if (weatherLegend) {
+		map.removeControl(weatherLegend);
+	  }
+	  
+	  // 切换按钮状态
+	  document.getElementById('show-weather-map').style.display = 'block';
+	  document.getElementById('hide-weather-map').style.display = 'none';
+	}
+
+	// 更新天气图例
+	function updateWeatherLegend(html) {
+	  // 根据不同天气类型设置不同的图例
+	  const selectedWeatherType = document.querySelector('input[name="weather-type"]:checked').value;
+	  let legendHtml;
+	  
+	  switch(selectedWeatherType) {
+		case 'temperature':
+		  legendHtml =
+			'<h4>🌡️ 温度图例 (°C)</h4>' +
+			'<div class="legend-gradient temp-gradient"></div>' +
+			'<div class="legend-labels">' +
+			  '<span>-20°C</span>' +
+			  '<span>0°C</span>' +
+			  '<span>20°C</span>' +
+			  '<span>40°C</span>' +
+			'</div>' +
+			'<div class="legend-scale">' +
+			  '<span>低温</span>' +
+			  '<span>高温</span>' +
+			'</div>';
+		  break;
+		  
+		case 'precipitation':
+		  legendHtml =
+			'<h4>💧 降水图例 (mm/h)</h4>' +
+			'<div class="legend-gradient precip-gradient"></div>' +
+			'<div class="legend-labels">' +
+			  '<span>0</span>' +
+			  '<span>2.5</span>' +
+			  '<span>5</span>' +
+			  '<span>10+</span>' +
+			'</div>' +
+			'<div class="legend-scale">' +
+			  '<span>小雨</span>' +
+			  '<span>大雨</span>' +
+			'</div>';
+		  break;
+		  
+		case 'wind':
+		  legendHtml =
+			'<h4>💨 风速图例 (m/s)</h4>' +
+			'<div class="legend-gradient wind-gradient"></div>' +
+			'<div class="legend-labels">' +
+			  '<span>0</span>' +
+			  '<span>5</span>' +
+			  '<span>10</span>' +
+			  '<span>20+</span>' +
+			'</div>' +
+			'<div class="legend-scale">' +
+			  '<span>轻风</span>' +
+			  '<span>强风</span>' +
+			'</div>';
+		  break;
+	  }
+	  
+	  if (weatherLegend) {
+		map.removeControl(weatherLegend);
+	  }
+	  
+	  weatherLegend = L.control({position: 'bottomright'});
+	  weatherLegend.onAdd = function(map) {
+		const div = L.DomUtil.create('div', 'weather-legend');
+		div.innerHTML = legendHtml;
+		return div;
+	  };
+	  
+	  weatherLegend.addTo(map);
+	}
+
+	// 修改按钮文本，添加图标
+	document.getElementById('show-weather-map').textContent = '🗺️ 显示天气地图';
+	document.getElementById('hide-weather-map').textContent = '👁️ 隐藏天气地图';
+
+	// 在页面加载完成后初始化天气地图功能
+	document.addEventListener('DOMContentLoaded', function() {
+	  // 等待地图初始化完成
+	  setTimeout(initWeatherMap, 1000);
+	});
+	
+	// 初始化测量距离
+	function initDistanceMeasurement() {
+	  // 添加测距按钮事件监听
+	  document.getElementById('start-measuring').addEventListener('click', startMeasuring);
+	  document.getElementById('stop-measuring').addEventListener('click', stopMeasuring);
+	  
+	  // 初始化测距控制
+	  measureControl = new L.Control.Draw({
+		draw: {
+		  polygon: false,
+		  rectangle: false,
+		  circle: false,
+		  circlemarker: false,
+		  marker: false,
+		  polyline: {
+			metric: true,
+			showLength: true,
+			feet: false,
+			nautic: false
+		  }
+		},
+		edit: {
+		  featureGroup: new L.FeatureGroup()
+		}
+	  });
+	}
+
+	// 开始测距
+	function startMeasuring() {
+	  // 切换按钮状态
+	  document.getElementById('start-measuring').style.display = 'none';
+	  document.getElementById('stop-measuring').style.display = 'block';
+	  document.getElementById('distance-result').style.display = 'block';
+	  
+	  // 添加测距控制到地图
+	  map.addControl(measureControl);
+	  
+	  // 监听绘制事件
+	  map.on(L.Draw.Event.CREATED, function (e) {
+		var type = e.layerType,
+			layer = e.layer;
+
+		if (type === 'polyline') {
+		  // 计算距离
+		  var distance = calculateDistance(layer);
+		  measuredDistance = distance;
+		  document.getElementById('measured-distance').textContent = distance.toFixed(2);
+		  
+		  // 将线添加到地图
+		  var distanceLayer = L.featureGroup().addLayer(layer);
+		  map.addLayer(distanceLayer);
+		}
+	  });
+	}
+
+	// 停止测距
+	function stopMeasuring() {
+	  // 切换按钮状态
+	  document.getElementById('start-measuring').style.display = 'block';
+	  document.getElementById('stop-measuring').style.display = 'none';
+	  
+	  // 移除测距控制
+	  map.removeControl(measureControl);
+	  
+	  // 移除绘制事件监听
+	  map.off(L.Draw.Event.CREATED);
+	}
+
+	// 计算距离（公里）
+	function calculateDistance(layer) {
+	  var latlngs = layer.getLatLngs();
+	  var distance = 0;
+	  
+	  for (var i = 0; i < latlngs.length - 1; i++) {
+		distance += latlngs[i].distanceTo(latlngs[i + 1]);
+	  }
+	  
+	  return distance / 1000; // 转换为公里
+	}
+
+	// 在DOMContentLoaded事件中添加测距功能初始化
+	document.addEventListener('DOMContentLoaded', function() {
+	  // 等待地图初始化完成
+	  setTimeout(function() {
+		initWeatherMap();
+		initDistanceMeasurement(); // 初始化测距功能
+	  }, 1000);
+	});
   </script>
 </body>
 </html>
