@@ -29,3 +29,5 @@ https://raw.githubusercontent.com/qiuqiu-22/KMLRouteMap/refs/heads/main/KMLFile/
 https://raw.githubusercontent.com/qiuqiu-22/KMLRouteMap/refs/heads/main/KMLFile/20250824%E6%88%B7%E5%A4%96%E9%AA%91%E8%A1%8C.kml
 
 https://raw.githubusercontent.com/qiuqiu-22/KMLRouteMap/refs/heads/main/KMLFile/20250826%E6%88%B7%E5%A4%96%E9%AA%91%E8%A1%8C.kml
+
+https://raw.githubusercontent.com/qiuqiu-22/KMLRouteMap/refs/heads/main/KMLFile/20250921Outdoor%20cycle.kml
